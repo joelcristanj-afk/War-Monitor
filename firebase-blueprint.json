@@ -1,0 +1,44 @@
+{
+  "entities": {
+    "Incident": {
+      "title": "Incident",
+      "description": "A geopolitical event or conflict incident.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string", "description": "Title of the incident" },
+        "description": { "type": "string", "description": "Detailed description" },
+        "summary": { "type": "string", "description": "AI-generated summary" },
+        "location": { "type": "object", "description": "LatLng coordinates" },
+        "severity": { "type": "number", "description": "Severity index 0-100" },
+        "type": { "type": "string", "description": "Type of event (conflict, military, protest, disaster)" },
+        "source": { "type": "string", "description": "Source of information" },
+        "timestamp": { "type": "string", "format": "date-time", "description": "Time of occurrence" },
+        "media": { "type": "array", "items": { "type": "string" }, "description": "List of media URLs" },
+        "escalationRisk": { "type": "string", "description": "AI-assessed escalation risk" }
+      },
+      "required": ["title", "location", "severity", "timestamp"]
+    },
+    "UserAlert": {
+      "title": "UserAlert",
+      "description": "User-defined alerts for specific regions or topics.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "User ID" },
+        "country": { "type": "string", "description": "Target country" },
+        "topic": { "type": "string", "description": "Target topic" },
+        "minSeverity": { "type": "number", "description": "Minimum severity to trigger alert" }
+      },
+      "required": ["uid"]
+    }
+  },
+  "firestore": {
+    "/incidents/{incidentId}": {
+      "schema": "Incident",
+      "description": "Global incidents and conflict events."
+    },
+    "/users/{userId}/alerts/{alertId}": {
+      "schema": "UserAlert",
+      "description": "User-specific alert configurations."
+    }
+  }
+}

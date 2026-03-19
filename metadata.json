@@ -1,0 +1,5 @@
+{
+  "name": "AI War Monitor",
+  "description": "Real-time AI-powered geopolitical monitoring dashboard aggregating global conflict and intelligence signals.",
+  "requestFramePermissions": ["geolocation"]
+}

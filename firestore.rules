@@ -1,0 +1,39 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    function isValidIncident(data) {
+      return data.title is string && data.title.size() > 0 && data.title.size() < 200 &&
+             data.severity is number && data.severity >= 0 && data.severity <= 100 &&
+             data.timestamp is string;
+    }
+    function isAdmin() {
+      return isAuthenticated() && 
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+         (request.auth.token.email == "joelcristanj@gmail.com" && request.auth.token.email_verified == true));
+    }
+
+    // Incidents: Publicly readable (authenticated), but only admins can write
+    match /incidents/{incidentId} {
+      allow read: if isAuthenticated();
+      allow create, update, delete: if isAdmin() && isValidIncident(request.resource.data);
+    }
+
+    // User Alerts: Owner only
+    match /users/{userId}/alerts/{alertId} {
+      allow read, write: if isOwner(userId);
+    }
+
+    // User profiles
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow write: if isOwner(userId);
+    }
+  }
+}
